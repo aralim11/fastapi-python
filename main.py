@@ -1,12 +1,12 @@
-from fastapi import FastAPI, Depends, status, HTTPException, Response
+from fastapi import FastAPI, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from schemas.blog import Blog
 from schemas.user import User
 import models
 from database import engine, get_db
+from libs.hashing import Hash
 
 models.Base.metadata.create_all(bind=engine)
-
 app = FastAPI()
 
 ## get all blogs
@@ -26,6 +26,7 @@ def show(id: int, db: Session = Depends(get_db)):
     
     return {"data": blog}
 
+## create blog
 @app.post("/blog", status_code=status.HTTP_201_CREATED)
 def createBlog(blog: Blog, db: Session = Depends(get_db)):
     new_blog = models.Blog(title=blog.title, description=blog.description, published=blog.published)
@@ -54,6 +55,10 @@ def deleteBlog(id, db: Session = Depends(get_db)):
     
 
 ## create user
-@app.post("/user")
-def createUser(request: User):
-    return {"OK"}
+@app.post("/user", status_code=status.HTTP_201_CREATED)
+def createUser(request: User, db: Session = Depends(get_db)):
+    new_user = models.User(name=request.name, email=request.email, password=Hash.bcrypt(request.password))
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"data": new_user}

@@ -8,3 +8,11 @@ class Blog(Base):
     title = Column(String(100), nullable=False, unique=True)
     description = Column(String(500), nullable=False)
     published = Column(Integer, default=0)  # 1 for True, 0 for False
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100))
+    email=Column(String(100), unique=True)
+    password=Column(String(100))

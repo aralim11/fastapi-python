@@ -3,12 +3,15 @@ from sqlalchemy.orm import Session
 import models
 from database import get_db
 import schemas.blog
+from typing import Annotated
+from libs.oAuth2 import get_current_user
+import schemas.user
 
 router = APIRouter()
 
 ## get all blogs
 @router.get("/blog", status_code=status.HTTP_200_OK, tags=['Blog'])
-def getData(db: Session = Depends(get_db)):
+def getData(current_user: Annotated[schemas.user.User, Depends(get_current_user)], db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
     if not blogs:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Blog not found")

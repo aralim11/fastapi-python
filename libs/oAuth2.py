@@ -1,8 +1,8 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-import jwt
-import token
+from fastapi.security import OAuth2PasswordBearer
+import libs
+import libs.token
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -12,5 +12,5 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
-    token.verify_token(token, credentials_exception)
+    
+    return libs.token.verify_token(token, credentials_exception)

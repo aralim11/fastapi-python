@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-import database
+import core.database as database
 import libs.token
 import schemas, models
 from fastapi.security import OAuth2PasswordRequestForm
@@ -21,6 +21,6 @@ def login(request: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session 
     
 
     access_token = libs.token.create_access_token(
-        data={"sub": user.email}
+        data={"id": user.id, "email": user.email}
     )
     return schemas.token.Token(access_token=access_token, token_type="bearer")

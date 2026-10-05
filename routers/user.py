@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 import schemas.user
-from database import get_db
+from core.database import get_db
 from libs.hashing import Hash
 
 router = APIRouter(

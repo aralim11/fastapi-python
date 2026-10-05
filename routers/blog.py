@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 import models
-from database import get_db
+from core.database import get_db
 import schemas.blog
 from typing import Annotated
 from libs.oAuth2 import get_current_user
-import schemas.user
+from schemas.user import User, CurrentUser
 
 router = APIRouter()
 
 ## get all blogs
 @router.get("/blog", status_code=status.HTTP_200_OK, tags=['Blog'])
-def getData(current_user: Annotated[schemas.user.User, Depends(get_current_user)], db: Session = Depends(get_db)):
+def getData(current_user: CurrentUser = Depends(get_current_user), db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
     if not blogs:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Blog not found")
@@ -28,8 +28,8 @@ def show(id: int, db: Session = Depends(get_db)):
 
 ## create blog
 @router.post("/blog", status_code=status.HTTP_201_CREATED, tags=['Blog'])
-def createBlog(blog: schemas.blog.Blog, db: Session = Depends(get_db)):
-    new_blog = models.Blog(title=blog.title, description=blog.description, published=blog.published, user_id=1)
+def createBlog(blog: schemas.blog.Blog, db: Session = Depends(get_db), current_user: CurrentUser = Depends(get_current_user)):
+    new_blog = models.Blog(title=blog.title, description=blog.description, published=blog.published, user_id=current_user.id)
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)

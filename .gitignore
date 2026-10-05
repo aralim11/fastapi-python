@@ -2,3 +2,6 @@ __pycache__
 fastapi-venv
 .DS_Store
 .vscode
+
+venv
+.env

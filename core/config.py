@@ -13,9 +13,14 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_PASSWORD: str
 
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
+    JWT_EXPIRE_MINUTES: int
+
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
-        env_file_encoding="utf-8"
+        env_file_encoding="utf-8",
+        case_sensitive=True
         )
 
 settings = Settings()
